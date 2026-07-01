@@ -5,7 +5,7 @@ export const register = async (req, res) => {
     const body = req.body
     const password = body.password
 
-    const isUsernameExist = await prisma.customer.findUnique({
+    const isUsernameExist = await prisma.user.findUnique({
         where: {
             username: body.username
         }
@@ -19,13 +19,11 @@ export const register = async (req, res) => {
 
     const hashPassword = bcrypt.hashSync(password, 12)
     
-    await prisma.customer.create({
+    await prisma.user.create({
         data: {
             username: body.username,
             password: hashPassword,
-            no_Telp: body.no_Telp
-            
-
+            no_telp: body.no_telp
         }
     })
 
@@ -38,9 +36,8 @@ export const login = async (req, res) => {
     const body = req.body
     const username = body.username
     const password = body.password
-    const no_Telp = body.no_Telp
 
-    const isUsernameExist = await prisma.customer.findUnique({
+    const isUsernameExist = await prisma.user.findUnique({
         where: {
             username: username
         }
@@ -54,18 +51,36 @@ export const login = async (req, res) => {
 
     const hashPassword = isUsernameExist.password
 
+    console.log("Body:", body);
+    console.log("Password dari request:", password);
+    console.log("Data user:", isUsernameExist);
+    console.log("Password di database:", hashPassword);
+
     if(!bcrypt.compareSync(password, hashPassword)){
         return res.status(401).json({
             message:'Incorrect Password'
         })
     }
 
+    const dataSession = JSON.stringify ({
+    username,
+    role: isUsernameExist.role
+    
+ })
+
+ res.cookie('user', dataSession,{
+    httpOnly: true,
+    secure: false,
+    sameSite: 'lax',
+    path: "/",
+    maxAge: 1000 * 60 * 60 * 24 * 7
+ })
+
     return res.json ({
         message: 'Login Successfully',
         data: {
             username:isUsernameExist.username,
-            role: isUsernameExist.role,
-            no_Telp: isUsernameExist.no_Telp
+            role: isUsernameExist.role
         }
     })
 }

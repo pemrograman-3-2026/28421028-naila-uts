@@ -74,3 +74,17 @@ export const GetAllproduct = async (req, res) => {
     res.json(data)
 }
 
+export const deleteProduct = async (req,res) => {
+    const idProduct= Number (req.params.id)
+
+    await prisma.product.delete({
+        where: {
+           id: idProduct
+
+        }
+
+    })
+    res.json({
+        message: 'Data was delete'
+    })
+}

@@ -1,6 +1,6 @@
 import multer from "multer"
 import {Router} from "express"
-import { createProduct, GetAllproduct, updateProduct } from "../controllers/product.controller.js"
+import { createProduct, deleteProduct, GetAllproduct, updateProduct } from "../controllers/product.controller.js"
 import path from "path"
 
 
@@ -21,5 +21,6 @@ const router = Router()
 router.post('/create', upload.single('Image'), createProduct)
 router.get('/get-all', GetAllproduct)
 router.put('/update/:id', upload.single('Image'), updateProduct)
+router.delete('/delete/:id',deleteProduct )
 
 export default router;
